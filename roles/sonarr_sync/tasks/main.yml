@@ -1,0 +1,86 @@
+#########################################################################
+# Title:         Cloudbox: SonarrSync Role                              #
+# Author(s):     EnorMOZ                                                #
+# URL:           https://github.com/cloudbox/cloudbox                   #
+# --                                                                    #
+#         Part of the Cloudbox project: https://cloudbox.rocks          #
+#########################################################################
+#                   GNU General Public License v3.0                     #
+#########################################################################
+---
+- name: Create SonarrSync directories
+  file: "path={{item}} state=directory mode=0775 owner={{user}} group={{user}} recurse=yes"
+  with_items:
+    - /opt/sonarr_sync
+
+- name: Clone SonarrSync
+  git:
+    repo: https://github.com/EnorMOZ/SonarrSync
+    dest: /opt/sonarr_sync
+    version: master
+    force: yes
+  become: yes
+  become_user: "{{user}}"
+
+- name: Check for SonarrSync config
+  stat:
+    path: "/opt/sonarr_sync/Config.txt"
+  register: sonarrsync_config
+
+- name: Check if Sonarr exists
+  stat:
+    path: "/opt/sonarr/app/config.xml"
+  register: sonarr_config
+
+- name: When Sonarr exists, add api key to SonarrSync config
+  block:
+
+  - name: Pull Sonarr api key
+    xml:
+      path: "/opt/sonarr/app/config.xml"
+      xpath: /Config/ApiKey
+      content: text
+    register: xmlresp
+
+  - name: Set Sonarr api key
+    set_fact:
+      sonarr_api_key: "{{ xmlresp.matches[0].ApiKey }}"
+
+  - name: Check if Sonarr4k exists
+    stat:
+      path: "/opt/sonarr4k/app/config.xml"
+    register: sonarr4k_config
+    when: not sonarrsync_config.stat.exists
+
+- name: When Sonarr4k exists, add api key to SonarrSync config
+  block:
+
+  - name: Pull Sonarr4k api key
+    xml:
+      path: "/opt/sonarr4k/app/config.xml"
+      xpath: /Config/ApiKey
+      content: text
+    register: xmlresp
+
+  - name: Set Sonarr4k api key
+    set_fact:
+      sonarr4k_api_key: "{{ xmlresp.matches[0].ApiKey }}"
+
+- name: Import default config
+  template:
+    src: template/Config.txt.js2
+    dest: /opt/sonarr_sync/Config.txt
+    group: "{{user}}"
+    mode: 0775
+    force: yes
+  when: not sonarrsync_config.stat.exists
+
+- name: Set SonarrSync.py as executable
+  file:
+    path: /opt/sonarr_sync
+    owner: "{{user}}"
+    group: "{{user}}"
+    mode: a+x
+
+- name: Set directory permissions
+  file: "path=/opt/sonarr_sync state=directory owner={{user}} group={{user}} recurse=yes"
