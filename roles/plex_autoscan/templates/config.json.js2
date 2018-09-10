@@ -35,6 +35,12 @@
       ],
       "3":[
          "/Music/"
+      ],
+      "4":[
+         "/4kMovies/"
+      ],
+      "5":[
+         "/4kTV/"
       ]
    },
    "PLEX_SUPPORT_DIR":"/var/lib/plexmediaserver/Library/Application\\ Support",
@@ -76,6 +82,16 @@
          "/music/",
          "/mnt/unionfs/Media/Music/",
          "My Drive/Media/Music/"
+      ],
+      "/data/4kMovies/":[
+         "/4kmovies/",
+         "/mnt/unionfs/Media/4kMovies/",
+         "My Drive/Media/4kMovies/"
+      ],
+      "/data/4kTV/":[
+         "/4ktv/",
+         "/mnt/unionfs/Media/4kTV/",
+         "My Drive/Media/4kTV/"
       ]
    },
    "SERVER_PORT":3468,
@@ -90,6 +106,12 @@
       ],
       "2":[
          "/Music/"
+      ],
+      "3":[
+         "/4kMovies/"
+      ],
+      "4":[
+         "/4kTV/"
       ]
    },
    "SERVER_USE_SQLITE":true,
