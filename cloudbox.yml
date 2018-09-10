@@ -62,3 +62,4 @@
     - { role: organizrv1, tags: ['organizrv1'] }
     - { role: sonarr_sync, tags: ['sonarr_sync'] }
     - { role: radarr_sync, tags: ['radarr_sync'] }
+    - { role: logarr, tags: ['logarr'] }
